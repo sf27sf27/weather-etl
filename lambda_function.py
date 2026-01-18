@@ -36,7 +36,7 @@ WEATHER_PARAMS = {
     ],
     "timezone": "America/New_York",
     "past_days": 1,  # Fetch last day to ensure we catch any missed data
-    "forecast_days": 0,  # No forecast data - historical only
+    "forecast_days": 1,  # Include today (future timestamps filtered out later)
 }
 
 
@@ -48,6 +48,7 @@ def get_db_connection():
         database=os.environ["DB_NAME"],
         user=os.environ["DB_USER"],
         password=os.environ["DB_PASSWORD"],
+        connect_timeout=10,
     )
 
 
