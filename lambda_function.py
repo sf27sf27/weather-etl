@@ -36,7 +36,7 @@ WEATHER_PARAMS = {
     ],
     "timezone": "America/New_York",
     "past_days": 1,  # Fetch last day to ensure we catch any missed data
-    "forecast_days": 1,
+    "forecast_days": 0,  # No forecast data - historical only
 }
 
 
@@ -124,9 +124,14 @@ def fetch_weather_data() -> pd.DataFrame:
 
 
 def filter_new_records(df: pd.DataFrame, cursor: Optional[datetime]) -> pd.DataFrame:
-    """Filter dataframe to only include records newer than the cursor."""
+    """Filter dataframe to only include records newer than the cursor and exclude future dates."""
+    # Exclude any future dates - we only want historical data
+    now = datetime.now(timezone.utc)
+    df = df[df["date"] <= now]
+    logger.info(f"Filtered out future dates, {len(df)} records remaining")
+    
     if cursor is None:
-        logger.info("No cursor, returning all records")
+        logger.info("No cursor, returning all historical records")
         return df
     
     # Ensure cursor is timezone-aware for comparison
