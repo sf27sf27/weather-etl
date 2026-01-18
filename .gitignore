@@ -12,6 +12,7 @@ ENV/
 
 # Cache
 .cache/
+*.sqlite
 
 # Lambda deployment
 lambda_package/

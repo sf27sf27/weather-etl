@@ -11,8 +11,8 @@ from typing import Optional
 import openmeteo_requests
 import pandas as pd
 import psycopg2
+import requests
 from psycopg2.extras import execute_values
-from requests_cache import CachedSession
 from retry_requests import retry
 
 # Configure logging
@@ -87,9 +87,9 @@ def get_latest_date_cursor(conn) -> Optional[datetime]:
 
 def fetch_weather_data() -> pd.DataFrame:
     """Fetch weather data from Open-Meteo API."""
-    # Setup API client with caching and retry
-    cache_session = CachedSession(".cache", expire_after=300)  # 5 min cache
-    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    # Setup API client with retry on error
+    session = requests.Session()
+    retry_session = retry(session, retries=5, backoff_factor=0.2)
     openmeteo = openmeteo_requests.Client(session=retry_session)
 
     responses = openmeteo.weather_api(WEATHER_API_URL, params=WEATHER_PARAMS)
